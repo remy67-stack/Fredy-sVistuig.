@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fredy's Vistuig Webshop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(to bottom, #a8e6cf, #dcedc1); color: #333; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
+        header { background: rgba(11, 61, 145, 0.85); color: white; padding: 60px 20px 40px 20px; text-align: center; border-radius: 0 0 20px 20px; }
+        header h1 { margin: 0; font-size: 3em; }
+        header p { margin-top: 10px; font-size: 1.3em; }
+        nav { background: rgba(6, 49, 112, 0.85); display: flex; justify-content: center; padding: 15px 0; border-radius: 0 0 10px 10px; }
+        nav a { color: white; margin: 0 20px; font-weight: bold; transition: color 0.3s; cursor:pointer; }
+        nav a:hover { color: #ffce00; }
+        .container { width: 95%; max-width: 1400px; margin: 40px auto; }
+        .category { margin-bottom: 60px; }
+        .category h2 { color: #0b5e1f; border-bottom: 3px solid #0b5e1f; padding-bottom: 10px; margin-bottom: 30px; font-size: 2em; }
+        .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; }
+        .product-card { background: rgba(255,255,255,0.95); border-radius: 12px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.2); }
+        .product-card h3 { margin: 10px 0 5px 0; font-size: 1.4em; }
+        .product-card p.price { font-weight: bold; font-size: 1.2em; color: #0b3d91; margin-bottom: 10px; }
+        .product-card p.desc { font-size: 0.95em; color: #555; margin-bottom: 15px; flex-grow: 1; }
+        .product-card button { background-color: #0b3d91; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.3s, transform 0.2s; }
+        .product-card button:hover { background-color: #063170; transform: scale(1.05); }
+        .cart-icon { position: fixed; top: 20px; right: 20px; background: #0b3d91; color: white; padding: 12px 18px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.2); transition: background 0.3s, transform 0.2s; }
+        .cart-count{background:#ffce00;color:#000;border-radius:50%;padding:2px 7px;margin-left:6px;font-size:0.9em;font-weight:bold}
+        .cart-icon:hover { background: #063170; transform: scale(1.05); }
+        .cart-page { width: 95%; max-width: 800px; margin: 80px auto; background: rgba(255,255,255,0.95); padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .cart-page h2 { color: #0b3d91; margin-top: 0; }
+        .cart-page ul { list-style: none; padding: 0; margin: 0; max-height: 500px; overflow-y: auto; }
+        .cart-page li { display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center; font-size: 1em; }
+        .cart-page li button { background-color: #ff4d4d; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; }
+        .cart-page li button:hover { background-color: #cc0000; }
+        .cart-page strong { display: block; margin-top: 20px; font-size: 1.2em; }
+        .checkout-button { margin-top: 20px; padding: 12px 18px; border: none; border-radius: 8px; background: #0b3d91; color: white; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .checkout-button:hover { background: #063170; }
+        @media (max-width: 768px) { nav { flex-direction: column; } nav a { margin: 10px 0; } }
+        #toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#0b3d91;color:white;padding:14px 22px;border-radius:8px;font-weight:bold;box-shadow:0 8px 20px rgba(0,0,0,0.3);opacity:0;pointer-events:none;transition:opacity .4s,transform .4s}
+        #toast.show{opacity:1;transform:translateX(-50%) translateY(-10px)}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1> Fredy's Vistuig</h1>
+    <p>Jouw ultieme viswinkel voor hengels, aas en accessoires</p>
+</header>
+
+<nav>
+    <a onclick="scrollToCategory('hengels')">Hengels</a>
+    <a onclick="scrollToCategory('kunstaas')">Kunstaas</a>
+    <a onclick="scrollToCategory('aas')">Aas</a>
+    <a onclick="scrollToCategory('materiaal')">Materiaal</a>
+</nav>
+
+<div class="cart-icon" onclick="goToCart()">🛒 Winkelwagen <span id="cart-count" class="cart-count">0</span></div>
+
+<div class="container" id="shop-container">
+
+    <!-- Hengels & Sets -->
+    <div id="hengels" class="category">
+        <h2>Hengels & Sets</h2>
+        <div class="products">
+            <div class="product-card">
+                <h3>Allround Spin Set</h3>
+                <p class="price">€95,55</p>
+                <p class="desc">Complete set voor de allround visser, geschikt voor verschillende vissoorten.</p>
+                <button onclick="addToCart('Allround Spin Set', 95.55)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Baitcast Combo</h3>
+                <p class="price">€75</p>
+                <p class="desc">Perfect voor nauwkeurige worpen en soepele viservaring.</p>
+                <button onclick="addToCart('Baitcast Combo', 75)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Specialist Feeder Set</h3>
+                <p class="price">€90</p>
+                <p class="desc">Ideaal voor feedervissen met precisie en comfort.</p>
+                <button onclick="addToCart('Specialist Feeder Set', 90)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Karper Set</h3>
+                <p class="price">€190</p>
+                <p class="desc">Complete karperset inclusief hengels, molens en accessoires.</p>
+                <button onclick="addToCart('Karper Set', 190)">🛒 In winkelwagen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kunstaas -->
+    <div id="kunstaas" class="category">
+        <h2>Kunstaas</h2>
+        <div class="products">
+            <div class="product-card">
+                <h3>Swimbait groene voorn/baars</h3>
+                <p class="price">€10,66</p>
+                <p class="desc">Levendig swimbait voor roofvissen zoals baars en voorn.</p>
+                <button onclick="addToCart('Swimbait groene voorn/baars', 10.66)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Swimbait groen/bruin (snoek)</h3>
+                <p class="price">€11,70</p>
+                <p class="desc">Perfecte imitatie voor snoek met realistische bewegingen.</p>
+                <button onclick="addToCart('Swimbait groen/bruin', 11.70)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Swimbait blauw (voorn)</h3>
+                <p class="price">€10,14</p>
+                <p class="desc">Aantrekkelijk voor roofvissen, met blauwgekleurde vinnen.</p>
+                <button onclick="addToCart('Swimbait blauw (voorn)', 10.14)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Regenboogforel</h3>
+                <p class="price">€10,53</p>
+                <p class="desc">Vers aas voor de echte forelliefhebber.</p>
+                <button onclick="addToCart('Regenboogforel', 10.53)">🛒 In winkelwagen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aas -->
+    <div id="aas" class="category">
+        <h2>Aas</h2>
+        <div class="products">
+            <div class="product-card">
+                <h3>Regenwormen</h3>
+                <p class="price">€4,29</p>
+                <p class="desc">Vers en actief aas voor verschillende vissoorten.</p>
+                <button onclick="addToCart('Regenwormen', 4.29)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Karper Pellets</h3>
+                <p class="price">€6,50</p>
+                <p class="desc">Voedzame pellets speciaal voor karpervissen.</p>
+                <button onclick="addToCart('Karper Pellets', 6.50)">🛒 In winkelwagen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Materiaal -->
+    <div id="materiaal" class="category">
+        <h2>Overig Materiaal</h2>
+        <div class="products">
+            <div class="product-card">
+                <h3>Haken maat 18</h3>
+                <p class="price">€1,30</p>
+                <p class="desc">Stevige haken voor al je visbehoeften.</p>
+                <button onclick="addToCart('Haken maat 18', 1.30)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Cradle landingset</h3>
+                <p class="price">€90</p>
+                <p class="desc">Compleet cradle voor het veilig landen van grote vissen.</p>
+                <button onclick="addToCart('Cradle landingset', 90)">🛒 In winkelwagen</button>
+            </div>
+            <div class="product-card">
+                <h3>Rubber landingsnet</h3>
+                <p class="price">€25</p>
+                <p class="desc">Rubberen net voor veilig en makkelijk landen van vis.</p>
+                <button onclick="addToCart('Rubber landingsnet', 25)">🛒 In winkelwagen</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="cart-page" class="cart-page" style="display:none;">
+    <h2>🛒 Winkelwagen</h2>
+    <ul id="cartItemsPage"></ul>
+    <strong>Totaal: €<span id="totalPage">0.00</span></strong>
+    <button class="checkout-button" onclick="checkout()">Afrekenen</button>
+    <button onclick="backToShop()" style="margin-top:10px; padding:10px 15px; border:none; border-radius:8px; background:#0b3d91; color:white; cursor:pointer; font-weight:bold;">Terug naar winkel</button>
+</div>
+
+<script>
+let cart = [];
+function addToCart(name, price){let existing=cart.find(item=>item.name===name);if(existing){existing.quantity++}else{cart.push({name,price,quantity:1})}updateCartCount();showToast(name+" toegevoegd aan winkelwagen")}
+function removeFromCart(index){if(cart[index].quantity>1){cart[index].quantity--}else{cart.splice(index,1)}updateCartCount();updateCartPage()}
+function goToCart(){document.getElementById('shop-container').style.display='none';document.getElementById('cart-page').style.display='block';updateCartPage()}
+function backToShop(){document.getElementById('cart-page').style.display='none';document.getElementById('shop-container').style.display='block'}
+function updateCartPage(){const cartItemsPage=document.getElementById('cartItemsPage');const totalPage=document.getElementById('totalPage');if(!cartItemsPage)return;cartItemsPage.innerHTML='';let sum=0;cart.forEach((item,index)=>{sum+=item.price*item.quantity;const li=document.createElement('li');li.innerHTML=item.name+' x'+item.quantity+' - €'+(item.price*item.quantity).toFixed(2)+' <button onclick="removeFromCart('+index+')">x</button>';cartItemsPage.appendChild(li)});totalPage.textContent=sum.toFixed(2)}
+function checkout(){if(cart.length===0){alert('Je winkelwagen is leeg!');return}let total=cart.reduce((acc,item)=>acc+item.price*item.quantity,0);alert('Bedankt voor je aankoop! Totaalbedrag: €'+total.toFixed(2));cart=[];updateCartCount();updateCartPage();backToShop()}
+function scrollToCategory(categoryId){backToShop();setTimeout(()=>{const el=document.getElementById(categoryId);if(el)el.scrollIntoView({behavior:'smooth'})},100)}
+function showToast(text){const toast=document.getElementById('toast');if(!toast)return;toast.textContent='🛒 '+text;toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show')},2000)}
+function updateCartCount(){const count=cart.reduce((n,i)=>n+i.quantity,0);const el=document.getElementById('cart-count');if(el)el.textContent=count}
+</script>
+<div id="toast"></div>
+</body>
+</html>
